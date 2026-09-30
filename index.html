@@ -1,134 +1,236 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SwiftDrop — Delivery Dashboard</title>
+<title>SwiftDrop Surat</title>
 <style>
-:root{--bg:#f4f7fb;--card:#fff;--ink:#182235;--muted:#718096;--primary:#526df5;--green:#20aa79;--yellow:#efa83f;--red:#e65c68;--line:#e5eaf2;--shadow:0 12px 35px rgba(28,42,76,.08)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#718096;--primary:#536df5;--green:#19a974;--red:#df5965;--line:#e5e9f1;--shadow:0 10px 30px rgba(25,40,75,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 button,input,select{font:inherit}button{cursor:pointer}
-header{background:linear-gradient(135deg,#18264f,#536ff5);color:#fff;padding:18px 5% 34px}
-.nav{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between}.brand{font-size:24px;font-weight:900;letter-spacing:-.5px}.online{display:flex;align-items:center;gap:7px;font-size:13px;background:#ffffff18;border:1px solid #ffffff30;padding:8px 12px;border-radius:99px}.dot{width:8px;height:8px;background:#48e09d;border-radius:50%;box-shadow:0 0 0 4px #48e09d25}
-.hero{max-width:1200px;margin:35px auto 0}.hero h1{font-size:clamp(32px,5vw,52px);margin:0 0 8px;letter-spacing:-1.8px}.hero p{margin:0;color:#dbe3ff;font-size:16px}
-.app{max-width:1200px;margin:-18px auto 50px;padding:0 18px}
-.navtabs{display:flex;gap:6px;overflow:auto;background:#fff;border:1px solid var(--line);padding:7px;border-radius:15px;box-shadow:var(--shadow);position:sticky;top:10px;z-index:10}
-.tab{border:0;background:transparent;color:var(--muted);padding:11px 17px;border-radius:10px;font-weight:800;white-space:nowrap}.tab.active,.tab:hover{background:#edf1ff;color:var(--primary)}
-.section{display:none;margin-top:18px}.section.active{display:block}
-.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}@media(max-width:850px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:20px;box-shadow:var(--shadow)}
-h2{margin:0 0 5px;font-size:21px}.subtitle{color:var(--muted);margin:0 0 17px;line-height:1.5}
-input,select{width:100%;border:1px solid var(--line);background:#fbfcff;padding:12px;border-radius:11px;margin:5px 0;color:var(--ink);outline:none}input:focus,select:focus{border-color:#9cacfa;box-shadow:0 0 0 3px #526df514}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--primary);color:#fff;font-weight:800}.btn.light{background:#eef1f7;color:#42506a}.btn.red{background:#fff0f1;color:#c54a56}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}.stat{padding:13px;border-radius:12px;background:#f8f9fd;border:1px solid var(--line)}.stat b{font-size:21px;display:block}.stat span{font-size:11px;color:var(--muted)}
-.msg{min-height:21px;margin-top:12px;font-size:13px;color:var(--muted)}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.toolbar input{margin:0;flex:1;min-width:180px}.filter{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 11px;color:var(--muted);font-weight:700}
-.orders{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}@media(max-width:650px){.orders{grid-template-columns:1fr}}
-.order{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff;position:relative;overflow:hidden}.order:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--primary)}.order.delivered:before{background:var(--green)}.order.cancelled:before{background:var(--red)}
-.row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.order b{font-size:15px}.order small{color:var(--muted);display:block;margin-top:4px}.badge{font-size:10px;font-weight:900;padding:5px 8px;border-radius:99px;background:#eef1ff;color:#5066d4;white-space:nowrap}.badge.done{background:#eafaf4;color:#16805d}.badge.cancel{background:#fff0f1;color:#c54a56}.price{font-weight:900;margin-top:10px}.order-actions{display:flex;gap:6px;margin-top:11px}.mini{border:0;padding:7px 9px;border-radius:8px;background:#f0f2f7;color:#526078;font-size:12px;font-weight:800}
-.empty{padding:35px;text-align:center;color:var(--muted);border:1px dashed #ccd3e2;border-radius:13px}
-.timeline{position:relative;margin:8px 0 0 12px;padding-left:28px}.timeline:before{content:"";position:absolute;left:4px;top:5px;bottom:5px;width:2px;background:#dce2ef}.event{position:relative;padding:0 0 23px}.event:before{content:"";position:absolute;left:-30px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--primary);border:4px solid #e9edff}.event b{font-size:14px}.event small{display:block;color:var(--muted);margin-top:3px}
-.routebox{background:#f8f9fd;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}.route-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}.place{background:#fff;border:1px solid var(--line);padding:8px 10px;border-radius:9px;font-weight:800}.arrow{color:#97a2b9}
-.map{height:330px;background:linear-gradient(135deg,#f9fbff,#eef3ff);border:1px solid var(--line);border-radius:15px;position:relative;overflow:hidden}
-.map:before,.map:after{content:"";position:absolute;background:#dfe6f3;height:2px;width:130%;left:-15%;transform:rotate(22deg);top:46%}.map:after{transform:rotate(-28deg);top:63%}
-.pin{position:absolute;width:45px;height:45px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:900;border:4px solid #fff;box-shadow:0 7px 16px #526df544;z-index:2}.pin.active{animation:pulse 1.4s infinite}.maplabel{position:absolute;transform:translate(-50%,53px);font-size:11px;font-weight:800;color:#526078;white-space:nowrap}
-@keyframes pulse{50%{box-shadow:0 0 0 12px #526df518,0 7px 16px #526df544}}
-.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:700px){.service-grid{grid-template-columns:1fr 1fr}}.service{padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff;transition:.2s}.service:hover{transform:translateY(-3px);box-shadow:var(--shadow)}.icon{font-size:29px}.service b{display:block;margin-top:8px}.service span{color:var(--muted);font-size:12px}
-.toast{position:fixed;right:20px;bottom:20px;background:#172235;color:#fff;padding:13px 16px;border-radius:11px;box-shadow:var(--shadow);transform:translateY(80px);opacity:0;transition:.25s;z-index:30}.toast.show{transform:translateY(0);opacity:1}
+header{background:linear-gradient(135deg,#17244a,#536df5);color:#fff;padding:18px 5% 38px}.nav,.hero,.app{max-width:1180px;margin:auto}.nav{display:flex;justify-content:space-between;align-items:center}.brand{font-size:24px;font-weight:900}.online{font-size:12px;background:#ffffff1c;padding:8px 12px;border-radius:99px}.online:before{content:"";display:inline-block;width:7px;height:7px;background:#45dc9b;border-radius:50%;margin-right:6px}.hero{margin-top:35px}.hero h1{font-size:clamp(31px,5vw,50px);margin:0 0 7px;letter-spacing:-1.5px}.hero p{margin:0;color:#dce4ff}.app{margin-top:-19px;padding:0 18px 50px}
+.tabs{display:flex;gap:6px;overflow:auto;background:#fff;border:1px solid var(--line);padding:7px;border-radius:15px;box-shadow:var(--shadow);position:sticky;top:10px;z-index:10}.tab{border:0;background:transparent;color:var(--muted);padding:11px 16px;border-radius:10px;font-weight:800;white-space:nowrap}.tab.active,.tab:hover{background:#edf0ff;color:var(--primary)}
+.page{display:none;margin-top:18px}.page.active{display:block}.layout{display:grid;grid-template-columns:350px 1fr;gap:18px}@media(max-width:850px){.layout{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}h2{margin:0 0 6px}.muted{color:var(--muted);line-height:1.5;margin:0 0 17px}
+input,select{width:100%;padding:12px;border:1px solid var(--line);background:#fbfcff;border-radius:10px;margin:5px 0;outline:none;color:var(--text)}input:focus,select:focus{border-color:#aab6ff;box-shadow:0 0 0 3px #536df514}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--primary);color:#fff;font-weight:800}.btn.light{background:#eef1f6;color:#44506a}.btn.red{background:#fff0f1;color:#c34955}
+.msg{color:var(--muted);font-size:13px;min-height:20px;margin-top:12px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.stat{background:#f8f9fd;border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{display:block;font-size:21px}.stat span{font-size:11px;color:var(--muted)}
+.toolbar{display:flex;gap:8px;margin-bottom:13px}.toolbar input{margin:0;flex:1}.toolbar select{width:auto;margin:0}.orders{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}@media(max-width:650px){.orders{grid-template-columns:1fr}}
+.order{border:1px solid var(--line);border-radius:13px;padding:14px;position:relative;overflow:hidden}.order:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--primary)}.order.done:before{background:var(--green)}.row{display:flex;justify-content:space-between;gap:10px}.order b{font-size:14px}.order small{display:block;color:var(--muted);margin-top:4px}.badge{font-size:10px;font-weight:900;padding:5px 8px;border-radius:99px;background:#edf0ff;color:#5268d5;white-space:nowrap}.badge.done{background:#e8faf3;color:#17805d}.progress{height:6px;background:#edf0f5;border-radius:99px;margin:11px 0 8px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),#8191ff);border-radius:99px;transition:width .4s}.price{font-weight:900}.actions-small{display:flex;gap:6px;margin-top:10px}.mini{border:0;background:#f0f2f7;color:#4c5870;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:800}
+.rider{display:flex;gap:10px;align-items:center;background:#f8f9fd;border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:9px}.avatar{width:37px;height:37px;border-radius:50%;display:grid;place-items:center;background:#e9edff}.rider small{display:block}
+.timeline{margin-left:9px;padding-left:25px;position:relative}.timeline:before{content:"";position:absolute;left:4px;top:5px;bottom:5px;width:2px;background:#dde3ef}.event{position:relative;padding:0 0 22px}.event:before{content:"";position:absolute;left:-29px;top:1px;width:9px;height:9px;border-radius:50%;background:var(--primary);border:4px solid #e9edff}.event small{display:block;color:var(--muted);margin-top:3px}
+.servicegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:650px){.servicegrid{grid-template-columns:1fr 1fr}}.service{border:1px solid var(--line);border-radius:14px;padding:18px;transition:.2s}.service:hover{transform:translateY(-3px);box-shadow:var(--shadow)}.service div{font-size:28px}.service b{display:block;margin-top:8px}.service span{font-size:12px;color:var(--muted)}
+.map{height:340px;border:1px solid var(--line);border-radius:15px;position:relative;overflow:hidden;background:linear-gradient(135deg,#f9fbff,#edf2ff)}.road{position:absolute;height:2px;background:#dce3f0;transform-origin:left center}.pin{position:absolute;width:42px;height:42px;border-radius:50%;background:var(--primary);border:4px solid white;color:white;display:grid;place-items:center;z-index:2;box-shadow:0 5px 15px #536df544}.pin.current{animation:pulse 1.5s infinite}.label{position:absolute;top:43px;left:50%;transform:translateX(-50%);white-space:nowrap;color:#536078;font-size:10px;font-weight:800}.maplegend{display:flex;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:10px}
+.empty{text-align:center;color:var(--muted);padding:30px;border:1px dashed #cfd6e4;border-radius:12px}.toast{position:fixed;right:18px;bottom:18px;background:#172235;color:white;padding:12px 15px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:.2s;z-index:30}.toast.show{opacity:1;transform:none}
+.modal{position:fixed;inset:0;background:#10182a66;display:none;align-items:flex-end;justify-content:center;z-index:40}.modal.show{display:flex}.modalbox{width:min(620px,100%);background:#fff;border-radius:20px 20px 0 0;padding:22px;max-height:85vh;overflow:auto}.close{float:right;border:0;border-radius:50%;background:#f0f2f7;width:34px;height:34px;font-size:18px}
 </style>
 </head>
 <body>
 <header>
-<div class="nav"><div class="brand">⚡ SwiftDrop</div><div class="online"><i class="dot"></i> Service online</div></div>
-<div class="hero"><h1>Good evening, Surat 👋</h1><p>Everything you need to manage today's deliveries in one place.</p></div>
+<div class="nav"><div class="brand">⚡ SwiftDrop</div><div class="online">Service online</div></div>
+<div class="hero"><h1>Good evening, Surat 👋</h1><p>Fast local deliveries, live tracking, and everything in one place.</p></div>
 </header>
 
 <main class="app">
-<nav class="navtabs">
-<button class="tab active" data-tab="dashboard">🏠 Dashboard</button>
-<button class="tab" data-tab="neworder">＋ New Order</button>
-<button class="tab" data-tab="activity">🕘 Activity</button>
-<button class="tab" data-tab="services">🛍️ Services</button>
-<button class="tab" data-tab="routes">📍 Delivery Map</button>
+<nav class="tabs">
+<button class="tab active" data-page="home">🏠 Dashboard</button>
+<button class="tab" data-page="new">＋ New Order</button>
+<button class="tab" data-page="activity">🕘 Activity</button>
+<button class="tab" data-page="services">🛍️ Services</button>
+<button class="tab" data-page="map">📍 Live Map</button>
 </nav>
 
-<section id="dashboard" class="section active">
-<div class="grid">
-<div class="card"><h2>Today's overview</h2><p class="subtitle">A live snapshot of your delivery operation.</p>
-<div class="stats"><div class="stat"><b id="pending">0</b><span>Waiting</span></div><div class="stat"><b id="delivered">0</b><span>Delivered</span></div><div class="stat"><b id="revenue">₹0</b><span>Revenue</span></div></div>
-<div class="notice" style="margin-top:16px;padding:13px;background:#eefaf5;border-radius:11px;color:#197b5b">⚡ Average delivery time <b>28 min</b><br><small>Keep an eye on the active orders below.</small></div>
+<section id="home" class="page active">
+<div class="layout">
+<div class="card"><h2>Today's overview</h2><p class="muted">Your delivery operation at a glance.</p>
+<div class="stats"><div class="stat"><b id="waitingCount">0</b><span>Waiting</span></div><div class="stat"><b id="doneCount">0</b><span>Delivered</span></div><div class="stat"><b id="revenue">₹0</b><span>Revenue</span></div></div>
+<div class="rider"><div class="avatar">🚴</div><div><b><span id="onlineRiders">12</span> riders online</b><small>Average arrival: <span id="avgEta">28</span> min</small></div></div>
+<div class="actions"><button class="btn" onclick="go('new')">Create order</button><button class="btn light" onclick="loadDemo()">Try demo</button></div>
 </div>
-<div class="card"><div class="row"><div><h2>Live orders</h2><p class="subtitle">Orders update instantly as you manage them.</p></div><button class="btn light" onclick="show('neworder')">＋ Add</button></div>
-<div class="toolbar"><input id="search" placeholder="Search customer or order..." oninput="renderOrders()"><select id="filter" class="filter" onchange="renderOrders()"><option value="all">All</option><option value="waiting">Waiting</option><option value="out">On the way</option><option value="delivered">Delivered</option></select></div>
+<div class="card"><div class="row"><div><h2>Live orders</h2><p class="muted">Track every delivery from pickup to doorstep.</p></div></div>
+<div class="toolbar"><input id="search" placeholder="Search customer, item or ID"><select id="statusFilter"><option value="all">All orders</option><option value="waiting">Waiting</option><option value="out">On the way</option><option value="done">Delivered</option></select></div>
 <div id="orders" class="orders"></div></div>
 </div>
 </section>
 
-<section id="neworder" class="section"><div class="grid">
-<div class="card"><h2>Create a delivery</h2><p class="subtitle">Add an order and it will appear immediately in the live dashboard.</p>
-<input id="customer" placeholder="Customer name"><input id="product" placeholder="What are they ordering?">
-<select id="area"><option>Surat Surat Central</option><option>Adajan</option><option>Vesu</option><option>Piplod</option><option>Athwa</option></select>
+<section id="new" class="page"><div class="layout">
+<div class="card"><h2>Create a delivery</h2><p class="muted">Add an order to start tracking it instantly.</p>
+<input id="customer" placeholder="Customer name"><input id="item" placeholder="Order details">
+<select id="area"><option>Surat Central</option><option>Adajan</option><option>Vesu</option><option>Piplod</option><option>Athwa</option><option>Udhna</option></select>
 <input id="amount" type="number" placeholder="Order amount (₹)">
-<div class="actions"><button class="btn" onclick="addOrder()">Create Order</button><button class="btn light" onclick="demoOrders()">Load Demo Orders</button></div><div id="nmsg" class="msg"></div></div>
-<div class="card"><h2>How it feels in real life</h2><p class="subtitle">A customer places an order, it waits for a rider, gets picked up, travels through the city, and is finally delivered.</p>
-<div class="timeline"><div class="event"><b>Order received</b><small>Customer confirms the order.</small></div><div class="event"><b>Rider assigned</b><small>A nearby rider accepts the delivery.</small></div><div class="event"><b>On the way</b><small>The package moves toward the customer.</small></div><div class="event"><b>Delivered</b><small>Customer receives the package.</small></div></div></div>
+<div class="actions"><button class="btn" onclick="createOrder()">Place order</button><button class="btn light" onclick="loadDemo()">Fill demo</button></div><div id="newMsg" class="msg"></div></div>
+<div class="card"><h2>Delivery journey</h2><p class="muted">Customers can follow each step in real time.</p>
+<div class="timeline"><div class="event"><b>Order received</b><small>We confirm the customer's request.</small></div><div class="event"><b>Rider assigned</b><small>A nearby delivery partner accepts it.</small></div><div class="event"><b>On the way</b><small>The rider travels to the destination.</small></div><div class="event"><b>Delivered</b><small>The customer receives the order.</small></div></div></div>
 </div></section>
 
-<section id="activity" class="section"><div class="grid">
-<div class="card"><h2>Recent activity</h2><p class="subtitle">Your latest delivery events.</p><div id="activityList" class="timeline"></div></div>
-<div class="card"><h2>Quick controls</h2><p class="subtitle">Manage the most recent operation.</p><button class="btn" onclick="undo()">↩ Undo last change</button><button class="btn light" style="margin-left:6px" onclick="clearActivity()">Clear activity</button><div id="amsg" class="msg"></div></div>
+<section id="activity" class="page"><div class="layout">
+<div class="card"><h2>Recent activity</h2><p class="muted">A live record of what is happening.</p><div id="activityList" class="timeline"></div></div>
+<div class="card"><h2>Quick actions</h2><p class="muted">Reverse your latest change if needed.</p><button class="btn" onclick="undo()">↩ Undo last change</button><button class="btn light" onclick="clearActivity()" style="margin-left:5px">Clear activity</button><div id="activityMsg" class="msg"></div></div>
 </div></section>
 
-<section id="services" class="section"><div class="card"><h2>What can we deliver?</h2><p class="subtitle">Choose a service to start a new order.</p><div class="service-grid">
-<div class="service" onclick="quickOrder('Food')"><div class="icon">🍕</div><b>Food</b><span>Meals, snacks & drinks</span></div>
-<div class="service" onclick="quickOrder('Groceries')"><div class="icon">🛒</div><b>Groceries</b><span>Daily essentials</span></div>
-<div class="service" onclick="quickOrder('Pharmacy')"><div class="icon">💊</div><b>Pharmacy</b><span>Health & personal care</span></div>
-<div class="service" onclick="quickOrder('Flowers')"><div class="icon">💐</div><b>Flowers</b><span>Gifts & special moments</span></div>
-<div class="service" onclick="quickOrder('Documents')"><div class="icon">📄</div><b>Documents</b><span>Fast local delivery</span></div>
-<div class="service" onclick="quickOrder('Parcel')"><div class="icon">📦</div><b>Parcel</b><span>Send packages anywhere</span></div>
+<section id="services" class="page"><div class="card"><h2>What would you like delivered?</h2><p class="muted">Choose a service and start an order.</p><div class="servicegrid">
+<div class="service" onclick="quick('Pizza or meals')"><div>🍕</div><b>Food</b><span>Meals, snacks & drinks</span></div>
+<div class="service" onclick="quick('Groceries')"><div>🛒</div><b>Groceries</b><span>Daily essentials</span></div>
+<div class="service" onclick="quick('Pharmacy items')"><div>💊</div><b>Pharmacy</b><span>Health & personal care</span></div>
+<div class="service" onclick="quick('Flowers')"><div>💐</div><b>Flowers</b><span>Gifts & occasions</span></div>
+<div class="service" onclick="quick('Documents')"><div>📄</div><b>Documents</b><span>Local document delivery</span></div>
+<div class="service" onclick="quick('Parcel')"><div>📦</div><b>Parcel</b><span>Send a package</span></div>
 </div></div></section>
 
-<section id="routes" class="section"><div class="grid">
-<div class="card"><h2>Delivery map</h2><p class="subtitle">See the areas connected to today's delivery network.</p>
-<div id="routeInfo"></div><div class="actions"><button class="btn" onclick="findBestRoute()">Find best route</button><button class="btn light" onclick="randomMove()">Move rider</button></div><div id="rmsg" class="msg"></div></div>
-<div class="card"><h2>Rider live location</h2><div id="map" class="map"></div></div></div></section>
+<section id="map" class="page"><div class="layout">
+<div class="card"><h2>Live delivery map</h2><p class="muted">Watch the rider move between Surat areas.</p><div id="routeText"></div><div class="actions"><button class="btn" onclick="nextLocation()">Move rider</button><button class="btn light" onclick="optimize()">Optimize route</button></div><div id="mapMsg" class="msg"></div></div>
+<div class="card"><div id="mapCanvas" class="map"></div><div class="maplegend">🔵 Rider location · ⚪ Delivery areas · Lines show connected roads</div></div>
+</div></section>
 </main>
+
 <div id="toast" class="toast"></div>
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><button class="close" onclick="closeModal()">×</button><h2 id="modalTitle"></h2><p id="modalSub" class="muted"></p><div id="modalBody"></div></div></div>
 
 <script>
-const $=id=>document.getElementById(id);
-let orders=[],activity=[],undoStack=[],riderStep=0;
-const routes=[['Udhna Hub','Surat Surat Central'],['Surat Surat Central','Adajan'],['Adajan','Vesu'],['Vesu','Piplod'],['Surat Surat Central','Athwa']];
-const locations={Udhna Hub:[13,66],'Surat Surat Central':[37,42],'Adajan':[59,24],'Vesu':[76,50],'Piplod':[68,78],'Athwa':[24,79]};
-const statuses=['waiting','out','delivered'];
+'use strict';
 
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.tab));
-function show(id){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));if(id==='routes')renderMap();if(id==='activity')renderActivity();window.scrollTo({top:0,behavior:'smooth'})}
-function addOrder(customer,product,area,amount,status='waiting'){
- if(!customer){customer=$('customer').value.trim();product=$('product').value.trim();area=$('area').value;amount=Number($('amount').value)||0}
- if(!customer||!product){$('nmsg').textContent='Please enter a customer and order.';return}
- let o={id:'SD-'+String(Date.now()).slice(-5),customer,product,area,amount:Number(amount)||0,status};
- orders.unshift(o);undoStack.push({type:'add',order:o});activity.unshift({text:`New order for ${customer}`,detail:`${product} · ${area}`});
- $('customer').value='';$('product').value='';$('amount').value='';$('nmsg').textContent=`${o.id} created successfully.`;toast('Order created ✓');renderAll();
+const $ = id => document.getElementById(id);
+const state = { orders: [], activity: [], undo: [], rider: 0 };
+const places = ['Udhna','Surat Central','Athwa','Vesu','Piplod','Adajan'];
+const coords = {Udhna:[12,70],'Surat Central':[34,43],Athwa:[53,66],Vesu:[74,39],Piplod:[78,70],Adajan:[43,19]};
+const roads = [
+    ['Udhna', 'Surat Central'],
+    ['Surat Central', 'Athwa'],
+    ['Surat Central', 'Adajan'],
+    ['Adajan', 'Vesu'],
+    ['Athwa', 'Vesu'],
+    ['Athwa', 'Piplod'],
+    ['Vesu', 'Piplod']
+];
+
+document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => go(btn.dataset.page)));
+$('search').addEventListener('input', renderOrders);
+$('statusFilter').addEventListener('change', renderOrders);
+
+function go(id){
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.page === id));
+  document.querySelectorAll('.page').forEach(x => x.classList.toggle('active', x.id === id));
+  if(id === 'map') renderMap();
 }
-function demoOrders(){addOrder('Aarav','Paneer Pizza + Coke','Surat Surat Central',420);addOrder('Diya','Weekly groceries','Adajan',850);addOrder('Rohan','Medicine & essentials','Vesu',310)}
-function quickOrder(type){show('neworder');$('product').value=type;$('nmsg').textContent=`Ready for a ${type} order.`}
-function nextStatus(id){let o=orders.find(x=>x.id===id);if(!o)return;undoStack.push({type:'status',order:o,old:o.status});o.status=o.status==='waiting'?'out':o.status==='out'?'delivered':'delivered';activity.unshift({text:`${o.id} updated`,detail:`${o.customer} · ${label(o.status)}`});toast(o.status==='delivered'?'Delivery completed 🎉':'Rider is on the way 🚴');renderAll()}
-function cancelOrder(id){let i=orders.findIndex(x=>x.id===id);if(i<0)return;let o=orders[i];undoStack.push({type:'remove',order:o,index:i});orders.splice(i,1);activity.unshift({text:`Order ${o.id} cancelled`,detail:o.customer});toast('Order cancelled');renderAll()}
-function undo(){let a=undoStack.pop();if(!a){$('amsg').textContent='Nothing to undo.';return}if(a.type==='add'){orders=orders.filter(x=>x.id!==a.order.id)}else if(a.type==='remove'){orders.splice(Math.min(a.index,orders.length),0,a.order)}else if(a.type==='status'){a.order.status=a.old}activity.unshift({text:'Last change undone',detail:a.order.customer});$('amsg').textContent='Last change has been reversed.';toast('Change undone ↩');renderAll()}
-function clearActivity(){activity=[];$('amsg').textContent='Activity cleared.';renderActivity()}
-function label(s){return s==='waiting'?'Waiting':s==='out'?'On the way':'Delivered'}
-function renderOrders(){let q=($('search')?.value||'').toLowerCase(),f=$('filter')?.value||'all';let list=orders.filter(o=>(f==='all'||o.status===f)&&(`${o.customer} ${o.product} ${o.id}`.toLowerCase().includes(q)));$('orders').innerHTML=list.length?list.map(o=>`<div class="order ${o.status==='delivered'?'delivered':''}"><div class="row"><div><b>${esc(o.product)}</b><small>${esc(o.customer)} · ${esc(o.area)}</small></div><span class="badge ${o.status==='delivered'?'done':''}">${label(o.status)}</span></div><div class="price">₹${o.amount.toLocaleString('en-IN')} <small style="display:inline">· ${o.id}</small></div><div class="order-actions">${o.status!=='delivered'?`<button class="mini" onclick="nextStatus('${o.id}')">${o.status==='waiting'?'Assign rider':'Mark delivered'}</button>`:''}<button class="mini" onclick="cancelOrder('${o.id}')">Cancel</button></div></div>`).join(''):'<div class="empty">No matching orders.</div>'}
-function renderActivity(){$('activityList').innerHTML=activity.length?activity.slice(0,12).map(a=>`<div class="event"><b>${esc(a.text)}</b><small>${esc(a.detail)}</small></div>`).join(''):'<div class="empty">No activity yet.</div>'}
-function renderStats(){$('pending').textContent=orders.filter(o=>o.status!=='delivered').length;$('delivered').textContent=orders.filter(o=>o.status==='delivered').length;$('revenue').textContent='₹'+orders.reduce((s,o)=>s+o.amount,0).toLocaleString('en-IN')}
-function renderRoutes(){let by={};routes.forEach(([a,b])=>(by[a]??=[]).push(b));let html=routes.slice(0,4).map(r=>`<div class="routebox"><b>🚴 ${r[0]}</b><div class="route-line"><span class="place">${r[0]}</span><span class="arrow">→</span><span class="place">${r[1]}</span></div></div>`).join('');$('routeInfo').innerHTML=html}
-function renderMap(){let m=$('map');m.innerHTML='';for(let [a,b] of routes){let p1=locations[a],p2=locations[b];let dx=(p2[0]-p1[0])*6.1,dy=(p2[1]-p1[1])*3.1,e=document.createElement('div');e.className='edge';e.style.left=p1[0]*6.1+'px';e.style.top=p1[1]*3.1+'px';e.style.width=Math.hypot(dx,dy)+'px';e.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;m.appendChild(e)}Object.entries(locations).forEach(([n,p])=>{let d=document.createElement('div');d.className='pin'+(n===routes[riderStep%routes.length][1]?' active':'');d.textContent='📍';d.style.left=(p[0]*6.1-22)+'px';d.style.top=(p[1]*3.1-22)+'px';let l=document.createElement('div');l.className='maplabel';l.textContent=n;d.appendChild(l);m.appendChild(d)})}
-function findBestRoute(){$('rmsg').innerHTML='<b style="color:var(--green)">Best route found:</b> Udhna Hub → Surat Surat Central → Adajan → Vesu';toast('Route optimized ✓')}
-function randomMove(){riderStep++;renderMap();$('rmsg').textContent=`Rider moved to ${routes[riderStep%routes.length][1]}.`;toast('Rider location updated 📍')}
-function renderAll(){renderOrders();renderStats();renderActivity();renderRoutes();if($('routes').classList.contains('active'))renderMap()}
-function toast(t){let x=$('toast');x.textContent=t;x.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>x.classList.remove('show'),1800)}
-function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-renderAll();renderMap();
+
+function createOrder(data){
+  if(!data){
+    const customer=$('customer').value.trim(), item=$('item').value.trim();
+    if(!customer || !item){$('newMsg').textContent='Please enter a customer and order.';return;}
+    data={customer,item,area:$('area').value,amount:Number($('amount').value)||0};
+  }
+  const order={id:'SD-'+String(Date.now()).slice(-6),customer:data.customer,item:data.item,area:data.area,amount:data.amount,status:'waiting',eta:18};
+  state.orders.unshift(order);
+  state.undo.push({type:'add',order});
+  state.activity.unshift({title:'New order received',detail:order.customer+' · '+order.item});
+  if($('customer')){$('customer').value='';$('item').value='';$('amount').value='';$('newMsg').textContent=order.id+' created successfully.';}
+  toast('Order created ✓'); render();
+}
+
+function loadDemo(){
+  const demos=[
+    {customer:'Aarav',item:'Paneer Pizza + Coke',area:'Surat Central',amount:420},
+    {customer:'Diya',item:'Weekly groceries',area:'Adajan',amount:850},
+    {customer:'Rohan',item:'Personal care items',area:'Vesu',amount:310}
+  ];
+  demos.forEach((x,i)=>setTimeout(()=>createOrder(x),i*120));
+}
+
+function quick(item){go('new');$('item').value=item;$('newMsg').textContent='Ready for a '+item+' order.';}
+
+function advance(id){
+  const o=state.orders.find(x=>x.id===id); if(!o)return;
+  const old=o.status;
+  o.status = old==='waiting' ? 'out' : 'done';
+  state.undo.push({type:'status',order:o,old});
+  state.activity.unshift({title:o.status==='out'?'Rider assigned':'Order delivered',detail:o.customer+' · '+o.area});
+  toast(o.status==='out'?'Rider assigned 🚴':'Delivered successfully 🎉');
+  render();
+}
+
+function cancelOrder(id){
+  const index=state.orders.findIndex(x=>x.id===id); if(index<0)return;
+  const order=state.orders[index]; state.orders.splice(index,1);
+  state.undo.push({type:'remove',order,index});
+  state.activity.unshift({title:'Order cancelled',detail:order.id+' · '+order.customer});
+  toast('Order cancelled'); render();
+}
+
+function undo(){
+  const a=state.undo.pop();
+  if(!a){$('activityMsg').textContent='Nothing to undo.';return;}
+  if(a.type==='add') state.orders=state.orders.filter(x=>x.id!==a.order.id);
+  if(a.type==='remove') state.orders.splice(Math.min(a.index,state.orders.length),0,a.order);
+  if(a.type==='status') a.order.status=a.old;
+  state.activity.unshift({title:'Last change undone',detail:a.order.id});
+  $('activityMsg').textContent='Last change reversed.';
+  toast('Change undone ↩'); render();
+}
+
+function details(id){
+  const o=state.orders.find(x=>x.id===id);if(!o)return;
+  $('modalTitle').textContent=o.item;
+  $('modalSub').textContent=o.id+' · '+o.customer;
+  const pct=o.status==='waiting'?20:o.status==='out'?68:100;
+  $('modalBody').innerHTML='<div class="rider"><div class="avatar">🚴</div><div><b>'+(o.status==='out'?'Rider is on the way':o.status==='done'?'Delivery completed':'Waiting for rider')+'</b><small>'+o.area+' · ₹'+o.amount.toLocaleString('en-IN')+'</small></div></div>'+
+  '<div class="progress"><span style="width:'+pct+'%"></span></div>'+
+  '<div class="timeline" style="margin-top:18px"><div class="event"><b>Order received</b><small>Request confirmed.</small></div><div class="event"><b>Rider assigned</b><small>'+(o.status==='waiting'?'Waiting for assignment.':'Rider has been assigned.')+'</small></div><div class="event"><b>On the way</b><small>'+(o.status==='out'?'Rider is travelling now.':o.status==='done'?'Completed.':'Coming next.')+'</small></div><div class="event"><b>Delivered</b><small>'+(o.status==='done'?'Successfully delivered.':'Not completed yet.')+'</small></div></div>';
+  $('modal').classList.add('show');
+}
+function closeModal(){$('modal').classList.remove('show');}
+
+function renderOrders(){
+  const q=$('search').value.trim().toLowerCase(), f=$('statusFilter').value;
+  const list=state.orders.filter(o=>(f==='all'||o.status===f)&&(`${o.id} ${o.customer} ${o.item}`.toLowerCase().includes(q)));
+  $('orders').innerHTML=list.length ? list.map(o=>{
+    const pct=o.status==='waiting'?18:o.status==='out'?68:100;
+    const badge=o.status==='done'?'done':'';
+    const action=o.status==='waiting'?'Assign rider':'Mark delivered';
+    return '<div class="order '+(o.status==='done'?'done':'')+'"><div class="row"><div><b>'+esc(o.item)+'</b><small>'+esc(o.customer)+' · '+esc(o.area)+'</small></div><span class="badge '+badge+'">'+label(o.status)+'</span></div><div class="progress"><span style="width:'+pct+'%"></span></div><div class="price">₹'+o.amount.toLocaleString('en-IN')+' <small style="display:inline">· '+o.id+'</small></div><div class="rider"><div class="avatar">'+(o.status==='done'?'✓':'🚴')+'</div><div><b>'+(o.status==='done'?'Delivered':o.status==='out'?'Rider is on the way':'Waiting for rider')+'</b><small>'+(o.status==='out'?'ETA '+o.eta+' min':o.status==='waiting'?'Assignment in progress':'Successfully completed')+'</small></div></div><div class="actions-small"><button class="mini" onclick="details(\''+o.id+'\')">Details</button>'+(o.status!=='done'?'<button class="mini" onclick="advance(\''+o.id+'\')">'+action+'</button>':'')+'<button class="mini" onclick="cancelOrder(\''+o.id+'\')">Cancel</button></div></div>';
+  }).join('') : '<div class="empty">No matching orders.</div>';
+}
+
+function renderStats(){
+  const waiting=state.orders.filter(o=>o.status!=='done').length, done=state.orders.filter(o=>o.status==='done').length, revenue=state.orders.reduce((sum,o)=>sum+o.amount,0);
+  $('waitingCount').textContent=waiting;$('doneCount').textContent=done;$('revenue').textContent='₹'+revenue.toLocaleString('en-IN');
+}
+
+function renderActivity(){
+  $('activityList').innerHTML=state.activity.length ? state.activity.slice(0,12).map(a=>'<div class="event"><b>'+esc(a.title)+'</b><small>'+esc(a.detail)+'</small></div>').join(''):'<div class="empty">No activity yet.</div>';
+}
+
+function clearActivity(){state.activity=[];$('activityMsg').textContent='Activity cleared.';renderActivity();}
+
+function renderMap(){
+  const canvas=$('mapCanvas');canvas.innerHTML='';
+  roads.forEach(([a,b])=>{
+    const p1=coords[a],p2=coords[b],dx=(p2[0]-p1[0])*6.1,dy=(p2[1]-p1[1])*3.15;
+    const e=document.createElement('div');e.className='road';e.style.left=p1[0]*6.1+'px';e.style.top=p1[1]*3.15+'px';e.style.width=Math.hypot(dx,dy)+'px';e.style.transform='rotate('+Math.atan2(dy,dx)+'rad)';canvas.appendChild(e);
+  });
+  places.forEach(name=>{
+    const p=coords[name],pin=document.createElement('div');pin.className='pin'+(name===places[state.rider]?' current':'');pin.style.left=(p[0]*6.1-21)+'px';pin.style.top=(p[1]*3.15-21)+'px';pin.textContent=name===places[state.rider]?'🚴':'•';
+    const label=document.createElement('span');label.className='label';label.textContent=name;pin.appendChild(label);canvas.appendChild(pin);
+  });
+  $('routeText').innerHTML='<div class="rider"><div class="avatar">🚴</div><div><b>Rider near '+places[state.rider]+'</b><small>Live location updates automatically.</small></div></div>';
+}
+
+function nextLocation(){state.rider=(state.rider+1)%places.length;renderMap();toast('Rider moved to '+places[state.rider]+' 📍');}
+function optimize(){$('mapMsg').textContent='Route optimized: Udhna → Surat Central → Adajan → Vesu → Piplod.';toast('Route optimized ✓');}
+
+function tick(){
+  state.orders.forEach(o=>{if(o.status==='out')o.eta=Math.max(4,o.eta-1);});
+  $('onlineRiders').textContent=10+Math.floor(Math.random()*5);
+  $('avgEta').textContent=24+Math.floor(Math.random()*9);
+  renderOrders();
+}
+
+function label(s){return s==='waiting'?'Waiting':s==='out'?'On the way':'Delivered';}
+function toast(text){const t=$('toast');t.textContent=text;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),1800);}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function render(){renderOrders();renderStats();renderActivity();renderMap();}
+
+render();
+setInterval(tick,5000);
 </script>
 </body>
 </html>
