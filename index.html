@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SwiftDrop — Delivery Dashboard</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#182235;--muted:#718096;--primary:#526df5;--green:#20aa79;--yellow:#efa83f;--red:#e65c68;--line:#e5eaf2;--shadow:0 12px 35px rgba(28,42,76,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+header{background:linear-gradient(135deg,#18264f,#536ff5);color:#fff;padding:18px 5% 34px}
+.nav{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between}.brand{font-size:24px;font-weight:900;letter-spacing:-.5px}.online{display:flex;align-items:center;gap:7px;font-size:13px;background:#ffffff18;border:1px solid #ffffff30;padding:8px 12px;border-radius:99px}.dot{width:8px;height:8px;background:#48e09d;border-radius:50%;box-shadow:0 0 0 4px #48e09d25}
+.hero{max-width:1200px;margin:35px auto 0}.hero h1{font-size:clamp(32px,5vw,52px);margin:0 0 8px;letter-spacing:-1.8px}.hero p{margin:0;color:#dbe3ff;font-size:16px}
+.app{max-width:1200px;margin:-18px auto 50px;padding:0 18px}
+.navtabs{display:flex;gap:6px;overflow:auto;background:#fff;border:1px solid var(--line);padding:7px;border-radius:15px;box-shadow:var(--shadow);position:sticky;top:10px;z-index:10}
+.tab{border:0;background:transparent;color:var(--muted);padding:11px 17px;border-radius:10px;font-weight:800;white-space:nowrap}.tab.active,.tab:hover{background:#edf1ff;color:var(--primary)}
+.section{display:none;margin-top:18px}.section.active{display:block}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}@media(max-width:850px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:20px;box-shadow:var(--shadow)}
+h2{margin:0 0 5px;font-size:21px}.subtitle{color:var(--muted);margin:0 0 17px;line-height:1.5}
+input,select{width:100%;border:1px solid var(--line);background:#fbfcff;padding:12px;border-radius:11px;margin:5px 0;color:var(--ink);outline:none}input:focus,select:focus{border-color:#9cacfa;box-shadow:0 0 0 3px #526df514}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--primary);color:#fff;font-weight:800}.btn.light{background:#eef1f7;color:#42506a}.btn.red{background:#fff0f1;color:#c54a56}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}.stat{padding:13px;border-radius:12px;background:#f8f9fd;border:1px solid var(--line)}.stat b{font-size:21px;display:block}.stat span{font-size:11px;color:var(--muted)}
+.msg{min-height:21px;margin-top:12px;font-size:13px;color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.toolbar input{margin:0;flex:1;min-width:180px}.filter{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 11px;color:var(--muted);font-weight:700}
+.orders{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}@media(max-width:650px){.orders{grid-template-columns:1fr}}
+.order{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff;position:relative;overflow:hidden}.order:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--primary)}.order.delivered:before{background:var(--green)}.order.cancelled:before{background:var(--red)}
+.row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.order b{font-size:15px}.order small{color:var(--muted);display:block;margin-top:4px}.badge{font-size:10px;font-weight:900;padding:5px 8px;border-radius:99px;background:#eef1ff;color:#5066d4;white-space:nowrap}.badge.done{background:#eafaf4;color:#16805d}.badge.cancel{background:#fff0f1;color:#c54a56}.price{font-weight:900;margin-top:10px}.order-actions{display:flex;gap:6px;margin-top:11px}.mini{border:0;padding:7px 9px;border-radius:8px;background:#f0f2f7;color:#526078;font-size:12px;font-weight:800}
+.empty{padding:35px;text-align:center;color:var(--muted);border:1px dashed #ccd3e2;border-radius:13px}
+.timeline{position:relative;margin:8px 0 0 12px;padding-left:28px}.timeline:before{content:"";position:absolute;left:4px;top:5px;bottom:5px;width:2px;background:#dce2ef}.event{position:relative;padding:0 0 23px}.event:before{content:"";position:absolute;left:-30px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--primary);border:4px solid #e9edff}.event b{font-size:14px}.event small{display:block;color:var(--muted);margin-top:3px}
+.routebox{background:#f8f9fd;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}.route-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}.place{background:#fff;border:1px solid var(--line);padding:8px 10px;border-radius:9px;font-weight:800}.arrow{color:#97a2b9}
+.map{height:330px;background:linear-gradient(135deg,#f9fbff,#eef3ff);border:1px solid var(--line);border-radius:15px;position:relative;overflow:hidden}
+.map:before,.map:after{content:"";position:absolute;background:#dfe6f3;height:2px;width:130%;left:-15%;transform:rotate(22deg);top:46%}.map:after{transform:rotate(-28deg);top:63%}
+.pin{position:absolute;width:45px;height:45px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:900;border:4px solid #fff;box-shadow:0 7px 16px #526df544;z-index:2}.pin.active{animation:pulse 1.4s infinite}.maplabel{position:absolute;transform:translate(-50%,53px);font-size:11px;font-weight:800;color:#526078;white-space:nowrap}
+@keyframes pulse{50%{box-shadow:0 0 0 12px #526df518,0 7px 16px #526df544}}
+.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:700px){.service-grid{grid-template-columns:1fr 1fr}}.service{padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff;transition:.2s}.service:hover{transform:translateY(-3px);box-shadow:var(--shadow)}.icon{font-size:29px}.service b{display:block;margin-top:8px}.service span{color:var(--muted);font-size:12px}
+.toast{position:fixed;right:20px;bottom:20px;background:#172235;color:#fff;padding:13px 16px;border-radius:11px;box-shadow:var(--shadow);transform:translateY(80px);opacity:0;transition:.25s;z-index:30}.toast.show{transform:translateY(0);opacity:1}
+</style>
+</head>
+<body>
+<header>
+<div class="nav"><div class="brand">⚡ SwiftDrop</div><div class="online"><i class="dot"></i> Service online</div></div>
+<div class="hero"><h1>Good evening, Surat 👋</h1><p>Everything you need to manage today's deliveries in one place.</p></div>
+</header>
+
+<main class="app">
+<nav class="navtabs">
+<button class="tab active" data-tab="dashboard">🏠 Dashboard</button>
+<button class="tab" data-tab="neworder">＋ New Order</button>
+<button class="tab" data-tab="activity">🕘 Activity</button>
+<button class="tab" data-tab="services">🛍️ Services</button>
+<button class="tab" data-tab="routes">📍 Delivery Map</button>
+</nav>
+
+<section id="dashboard" class="section active">
+<div class="grid">
+<div class="card"><h2>Today's overview</h2><p class="subtitle">A live snapshot of your delivery operation.</p>
+<div class="stats"><div class="stat"><b id="pending">0</b><span>Waiting</span></div><div class="stat"><b id="delivered">0</b><span>Delivered</span></div><div class="stat"><b id="revenue">₹0</b><span>Revenue</span></div></div>
+<div class="notice" style="margin-top:16px;padding:13px;background:#eefaf5;border-radius:11px;color:#197b5b">⚡ Average delivery time <b>28 min</b><br><small>Keep an eye on the active orders below.</small></div>
+</div>
+<div class="card"><div class="row"><div><h2>Live orders</h2><p class="subtitle">Orders update instantly as you manage them.</p></div><button class="btn light" onclick="show('neworder')">＋ Add</button></div>
+<div class="toolbar"><input id="search" placeholder="Search customer or order..." oninput="renderOrders()"><select id="filter" class="filter" onchange="renderOrders()"><option value="all">All</option><option value="waiting">Waiting</option><option value="out">On the way</option><option value="delivered">Delivered</option></select></div>
+<div id="orders" class="orders"></div></div>
+</div>
+</section>
+
+<section id="neworder" class="section"><div class="grid">
+<div class="card"><h2>Create a delivery</h2><p class="subtitle">Add an order and it will appear immediately in the live dashboard.</p>
+<input id="customer" placeholder="Customer name"><input id="product" placeholder="What are they ordering?">
+<select id="area"><option>Surat Surat Central</option><option>Adajan</option><option>Vesu</option><option>Piplod</option><option>Athwa</option></select>
+<input id="amount" type="number" placeholder="Order amount (₹)">
+<div class="actions"><button class="btn" onclick="addOrder()">Create Order</button><button class="btn light" onclick="demoOrders()">Load Demo Orders</button></div><div id="nmsg" class="msg"></div></div>
+<div class="card"><h2>How it feels in real life</h2><p class="subtitle">A customer places an order, it waits for a rider, gets picked up, travels through the city, and is finally delivered.</p>
+<div class="timeline"><div class="event"><b>Order received</b><small>Customer confirms the order.</small></div><div class="event"><b>Rider assigned</b><small>A nearby rider accepts the delivery.</small></div><div class="event"><b>On the way</b><small>The package moves toward the customer.</small></div><div class="event"><b>Delivered</b><small>Customer receives the package.</small></div></div></div>
+</div></section>
+
+<section id="activity" class="section"><div class="grid">
+<div class="card"><h2>Recent activity</h2><p class="subtitle">Your latest delivery events.</p><div id="activityList" class="timeline"></div></div>
+<div class="card"><h2>Quick controls</h2><p class="subtitle">Manage the most recent operation.</p><button class="btn" onclick="undo()">↩ Undo last change</button><button class="btn light" style="margin-left:6px" onclick="clearActivity()">Clear activity</button><div id="amsg" class="msg"></div></div>
+</div></section>
+
+<section id="services" class="section"><div class="card"><h2>What can we deliver?</h2><p class="subtitle">Choose a service to start a new order.</p><div class="service-grid">
+<div class="service" onclick="quickOrder('Food')"><div class="icon">🍕</div><b>Food</b><span>Meals, snacks & drinks</span></div>
+<div class="service" onclick="quickOrder('Groceries')"><div class="icon">🛒</div><b>Groceries</b><span>Daily essentials</span></div>
+<div class="service" onclick="quickOrder('Pharmacy')"><div class="icon">💊</div><b>Pharmacy</b><span>Health & personal care</span></div>
+<div class="service" onclick="quickOrder('Flowers')"><div class="icon">💐</div><b>Flowers</b><span>Gifts & special moments</span></div>
+<div class="service" onclick="quickOrder('Documents')"><div class="icon">📄</div><b>Documents</b><span>Fast local delivery</span></div>
+<div class="service" onclick="quickOrder('Parcel')"><div class="icon">📦</div><b>Parcel</b><span>Send packages anywhere</span></div>
+</div></div></section>
+
+<section id="routes" class="section"><div class="grid">
+<div class="card"><h2>Delivery map</h2><p class="subtitle">See the areas connected to today's delivery network.</p>
+<div id="routeInfo"></div><div class="actions"><button class="btn" onclick="findBestRoute()">Find best route</button><button class="btn light" onclick="randomMove()">Move rider</button></div><div id="rmsg" class="msg"></div></div>
+<div class="card"><h2>Rider live location</h2><div id="map" class="map"></div></div></div></section>
+</main>
+<div id="toast" class="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let orders=[],activity=[],undoStack=[],riderStep=0;
+const routes=[['Udhna Hub','Surat Surat Central'],['Surat Surat Central','Adajan'],['Adajan','Vesu'],['Vesu','Piplod'],['Surat Surat Central','Athwa']];
+const locations={Udhna Hub:[13,66],'Surat Surat Central':[37,42],'Adajan':[59,24],'Vesu':[76,50],'Piplod':[68,78],'Athwa':[24,79]};
+const statuses=['waiting','out','delivered'];
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+function show(id){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));if(id==='routes')renderMap();if(id==='activity')renderActivity();window.scrollTo({top:0,behavior:'smooth'})}
+function addOrder(customer,product,area,amount,status='waiting'){
+ if(!customer){customer=$('customer').value.trim();product=$('product').value.trim();area=$('area').value;amount=Number($('amount').value)||0}
+ if(!customer||!product){$('nmsg').textContent='Please enter a customer and order.';return}
+ let o={id:'SD-'+String(Date.now()).slice(-5),customer,product,area,amount:Number(amount)||0,status};
+ orders.unshift(o);undoStack.push({type:'add',order:o});activity.unshift({text:`New order for ${customer}`,detail:`${product} · ${area}`});
+ $('customer').value='';$('product').value='';$('amount').value='';$('nmsg').textContent=`${o.id} created successfully.`;toast('Order created ✓');renderAll();
+}
+function demoOrders(){addOrder('Aarav','Paneer Pizza + Coke','Surat Surat Central',420);addOrder('Diya','Weekly groceries','Adajan',850);addOrder('Rohan','Medicine & essentials','Vesu',310)}
+function quickOrder(type){show('neworder');$('product').value=type;$('nmsg').textContent=`Ready for a ${type} order.`}
+function nextStatus(id){let o=orders.find(x=>x.id===id);if(!o)return;undoStack.push({type:'status',order:o,old:o.status});o.status=o.status==='waiting'?'out':o.status==='out'?'delivered':'delivered';activity.unshift({text:`${o.id} updated`,detail:`${o.customer} · ${label(o.status)}`});toast(o.status==='delivered'?'Delivery completed 🎉':'Rider is on the way 🚴');renderAll()}
+function cancelOrder(id){let i=orders.findIndex(x=>x.id===id);if(i<0)return;let o=orders[i];undoStack.push({type:'remove',order:o,index:i});orders.splice(i,1);activity.unshift({text:`Order ${o.id} cancelled`,detail:o.customer});toast('Order cancelled');renderAll()}
+function undo(){let a=undoStack.pop();if(!a){$('amsg').textContent='Nothing to undo.';return}if(a.type==='add'){orders=orders.filter(x=>x.id!==a.order.id)}else if(a.type==='remove'){orders.splice(Math.min(a.index,orders.length),0,a.order)}else if(a.type==='status'){a.order.status=a.old}activity.unshift({text:'Last change undone',detail:a.order.customer});$('amsg').textContent='Last change has been reversed.';toast('Change undone ↩');renderAll()}
+function clearActivity(){activity=[];$('amsg').textContent='Activity cleared.';renderActivity()}
+function label(s){return s==='waiting'?'Waiting':s==='out'?'On the way':'Delivered'}
+function renderOrders(){let q=($('search')?.value||'').toLowerCase(),f=$('filter')?.value||'all';let list=orders.filter(o=>(f==='all'||o.status===f)&&(`${o.customer} ${o.product} ${o.id}`.toLowerCase().includes(q)));$('orders').innerHTML=list.length?list.map(o=>`<div class="order ${o.status==='delivered'?'delivered':''}"><div class="row"><div><b>${esc(o.product)}</b><small>${esc(o.customer)} · ${esc(o.area)}</small></div><span class="badge ${o.status==='delivered'?'done':''}">${label(o.status)}</span></div><div class="price">₹${o.amount.toLocaleString('en-IN')} <small style="display:inline">· ${o.id}</small></div><div class="order-actions">${o.status!=='delivered'?`<button class="mini" onclick="nextStatus('${o.id}')">${o.status==='waiting'?'Assign rider':'Mark delivered'}</button>`:''}<button class="mini" onclick="cancelOrder('${o.id}')">Cancel</button></div></div>`).join(''):'<div class="empty">No matching orders.</div>'}
+function renderActivity(){$('activityList').innerHTML=activity.length?activity.slice(0,12).map(a=>`<div class="event"><b>${esc(a.text)}</b><small>${esc(a.detail)}</small></div>`).join(''):'<div class="empty">No activity yet.</div>'}
+function renderStats(){$('pending').textContent=orders.filter(o=>o.status!=='delivered').length;$('delivered').textContent=orders.filter(o=>o.status==='delivered').length;$('revenue').textContent='₹'+orders.reduce((s,o)=>s+o.amount,0).toLocaleString('en-IN')}
+function renderRoutes(){let by={};routes.forEach(([a,b])=>(by[a]??=[]).push(b));let html=routes.slice(0,4).map(r=>`<div class="routebox"><b>🚴 ${r[0]}</b><div class="route-line"><span class="place">${r[0]}</span><span class="arrow">→</span><span class="place">${r[1]}</span></div></div>`).join('');$('routeInfo').innerHTML=html}
+function renderMap(){let m=$('map');m.innerHTML='';for(let [a,b] of routes){let p1=locations[a],p2=locations[b];let dx=(p2[0]-p1[0])*6.1,dy=(p2[1]-p1[1])*3.1,e=document.createElement('div');e.className='edge';e.style.left=p1[0]*6.1+'px';e.style.top=p1[1]*3.1+'px';e.style.width=Math.hypot(dx,dy)+'px';e.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;m.appendChild(e)}Object.entries(locations).forEach(([n,p])=>{let d=document.createElement('div');d.className='pin'+(n===routes[riderStep%routes.length][1]?' active':'');d.textContent='📍';d.style.left=(p[0]*6.1-22)+'px';d.style.top=(p[1]*3.1-22)+'px';let l=document.createElement('div');l.className='maplabel';l.textContent=n;d.appendChild(l);m.appendChild(d)})}
+function findBestRoute(){$('rmsg').innerHTML='<b style="color:var(--green)">Best route found:</b> Udhna Hub → Surat Surat Central → Adajan → Vesu';toast('Route optimized ✓')}
+function randomMove(){riderStep++;renderMap();$('rmsg').textContent=`Rider moved to ${routes[riderStep%routes.length][1]}.`;toast('Rider location updated 📍')}
+function renderAll(){renderOrders();renderStats();renderActivity();renderRoutes();if($('routes').classList.contains('active'))renderMap()}
+function toast(t){let x=$('toast');x.textContent=t;x.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>x.classList.remove('show'),1800)}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+renderAll();renderMap();
+</script>
+</body>
+</html>
